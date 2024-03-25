@@ -1,8 +1,10 @@
+import axios from "axios"
 
 const initialState = {
 	balance:0,
 	loanAmount:0,
-	purpose:""
+	purpose:"",
+	isLoading:false
 }
 
 export default function accountReducer(state = initialState,action)
@@ -10,7 +12,7 @@ export default function accountReducer(state = initialState,action)
 	switch(action.type)
 	{
 		case "account/deposit":
-		return {...state, balance:state.balance+action.payload}
+		return {...state,isLoading:false, balance:state.balance+action.payload}
 
 		case "account/withdrawl":
 		return {...state, balance:state.balance-action.payload}
@@ -21,17 +23,31 @@ export default function accountReducer(state = initialState,action)
 
 	   case "account/payLoan":
 			return {...state, loanAmount:0,purpose:"", balance:state.balance-state.loanAmount}
-
+		case "account/convertingCurrency":
+				return {...state, isLoading:true}
 		default:
 		return {...state}
 
 	}
 }
 
-
-export function deposit(amount)
+//Account action creators
+export function deposit(amount,currency)
 {
- return {type:"account/deposit", payload:amount}
+
+	if(currency === "USD") return {type:"account/deposit", payload:amount}
+	return async  function (dispatch, getState)
+	{
+		dispatch({type:"account/convertingCurrency"})
+		console.log(`https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=USD`)
+      // Api call here
+     const response =  await axios.get(`https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=USD`)
+     console.log(response.status === 200)
+	 if(response.status === 200)
+	 {
+		dispatch({type:"account/deposit", payload:response.data.rates.USD})
+	 }
+	}
 }
 
 
