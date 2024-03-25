@@ -1,3 +1,6 @@
+**This demo will explain how redux works without redux toolkit. Though createstore method is depriciated but this is very important when you want to understand redux from scratch. We can still use this method for learning purpose.
+**
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
